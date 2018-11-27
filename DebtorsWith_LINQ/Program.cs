@@ -31,8 +31,10 @@ namespace DebtorsWith_LINQ
                 return $"{this.FullName} {this.BirthDay.ToShortDateString()} {this.Phone} {this.Email} {this.Address} {this.Debt}";
             }
         }
-
-        List<Debtor> debtors = new List<Debtor> {
+        
+        static void Main()
+        {
+            List<Debtor> debtors = new List<Debtor> {
             new Debtor("Shirley T. Qualls", DateTime.Parse("March 30, 1932"), "530-662-7732", "ShirleyTQualls@teleworm.us", "3565 Eagles Nest Drive Woodland, CA 95695", 2414),
             new Debtor("Danielle W. Grier", DateTime.Parse("October 18, 1953"), "321-473-4178", "DanielleWGrier@rhyta.com", "1973 Stoneybrook Road Maitland, FL 32751", 3599),
             new Debtor("Connie W. Lemire", DateTime.Parse("June 18, 1963"), "828-321-3751", "ConnieWLemire@rhyta.com", "2432 Hannah Street Andrews, NC 28901", 1219),
@@ -80,11 +82,115 @@ namespace DebtorsWith_LINQ
             new Debtor("Lakisha R. Forrest", DateTime.Parse("December 1, 1973"), "334-830-1181", "LakishaRForrest@armyspy.com", "3121 Quarry Drive Montgomery, AL 36117", 3088),
             new Debtor("Pamela H. Beauchamp", DateTime.Parse("November 20, 1959"), "801-559-6347", "PamelaHBeauchamp@jourrapide.com", "3239 Tori Lane Salt Lake City, UT 84104", 6588)
         };
+            while (true)
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("LINQ");
+                Console.WriteLine(@"
+     1  - Email with 'rhyta.com' or 'dayrep.com'  |  4  - Name < 13 Symbol
+     2  - Age 26-36                               |  5  - Born in Winter  
+     3  - Debts < 5000                            |  6  - Average Debts");
+                Console.ResetColor();
+                var choice = Console.ReadLine();
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Black;
+                switch (choice)
+                {
+                    case "1":
+                        {
+                            var tmp = from x in debtors
+                                      where x.Email.Contains("rhyta.com") || x.Email.Contains("dayrep.com")
+                                      select x;
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    case "2":
+                        {
+                            int now = DateTime.Now.Year;
+                            var tmp = from x in debtors
+                                      where ((now - x.BirthDay.Year) >= 26 && (now - x.BirthDay.Year) <= 36)
+                                      select x;
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    case "3":
+                        {
+                            var tmp = from x in debtors
+                                      where (x.Debt < 5000)
+                                      select x;
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    case "4":
+                        {
+                            var tmp = from x in debtors
+                                      where (x.FullName.Length - 1 >= 13) && ((x.Phone.IndexOf('7') != (x.Phone.LastIndexOf('7'))))
+                                      select x;
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    case "5":
+                        {
+                            var tmp = from x in debtors
+                                      where (x.BirthDay.Month > 11) || (x.BirthDay.Month < 3)
+                                      select x;
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    case "6":
+                        {
+                            int debs = 0;
+                            foreach (var item in debtors)
+                            {
+                                debs += item.Debt;
+                            }
+                            debs /= debtors.Count;
+                            var tmp = from x in debtors
+                                      where (x.Debt > debs)
+                                      select x;
 
-
-        static void Main()
-        {
-
+                            tmp = from x in tmp
+                                  orderby x.FullName.Substring(x.FullName.LastIndexOf(' '))
+                                  select x;
+                            Console.WriteLine("Average Debtors (Sorted by Surnames)");
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                            tmp = from x in tmp
+                                  orderby x.Debt descending
+                                  select x;
+                            Console.WriteLine("\nAverage Debtors (Sorted by Debts)\n");
+                            foreach (var item in tmp)
+                            {
+                                Console.WriteLine(item.ToString());
+                            }
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("There is no command like this");
+                        break;
+                }
+                Console.ResetColor();
+                Console.WriteLine("any key for return main menu");
+                Console.ReadKey();
+            }
         }
     }
 }
